@@ -1,2 +1,2 @@
 canopy_height_dataset.zip #ignore les données
-canopy_height_dataset #ignore les données si exraites
+canopy_height_dataset/ #ignore les données si exraites
