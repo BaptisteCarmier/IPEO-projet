@@ -1,17 +1,9 @@
-## Function to unzip data file ##
-"""
-import zipfile
-with zipfile.ZipFile("canopy_height_dataset.zip", 'r') as zip_ref:
-    zip_ref.extractall()
-"""
 import os
 import pandas as pd
 import torch
 from torch.utils.data import Dataset, DataLoader
-import PIL
-from PIL import Image
+import rasterio  # Remplacement de PIL par rasterio
 import numpy as np
-
 from pathlib import Path
 
 csv_path = "canopy_height_dataset/data_split.csv"
@@ -25,7 +17,7 @@ class Sentinel2(Dataset):
             transform (callable, optional): Transformations to apply to both images and masks.
         """
         # Load the CSV file
-        self.data = pd.read_csv(csv_path, delimiter = ';')
+        self.data = pd.read_csv(csv_path, delimiter = ',')
         
         # Filter dataset based on the split
         self.data = self.data[self.data['split'] == split]
@@ -38,36 +30,33 @@ class Sentinel2(Dataset):
     def __getitem__(self, idx):
         # Get image and label paths from the CSV
         row = self.data.iloc[idx]
-        image_path = os.path.join("canopy_height_dataset/" + row['image_path'])
-        mask_path = os.path.join("canopy_height_dataset/" + row['label_path'])
+        image_path = os.path.join("canopy_height_dataset/", row['image_path'])
+        mask_path = os.path.join("canopy_height_dataset/", row['label_path'])
         
-        # Load image and mask
-        image = Image.open(image_path)
-        mask = Image.open(mask_path)
+        # Load image with Rasterio
+        with rasterio.open(image_path) as src:
+            image = src.read()  # Lit toutes les bandes, shape: (C, H, W)
         
-        # Convert to numpy arrays
-        image = np.array(image, dtype=np.float32)  # Convert image to float32
-        mask = np.array(mask, dtype=np.float32)    # Convert mask to float32
+        # Charger le masque (supposant une seule bande)
+        with rasterio.open(mask_path) as src:
+            mask = src.read(1)  # Lit uniquement la première bande, shape: (H, W)
         
-        # Handle nodata values in the mask
-        mask[mask == 255] = -1  # Set nodata to -1 or any specific value as needed
-
-        # Apply transforms if provided
+        # Convertir les types pour PyTorch
+        image = np.array(image, dtype=np.float32)
+        mask = np.array(mask, dtype=np.float32)
+        
+        # Gérer les valeurs nodata dans le masque
+        mask[mask == 255] = -1  # Set nodata to -1 ou autre valeur si besoin
+        
+        # Appliquer les transformations si elles existent
         if self.transform is not None:
             image, mask = self.transform(image, mask)
         
-        # Convert to tensors
-        image = torch.from_numpy(image).permute(2, 0, 1)  # HWC to CHW
-        mask = torch.from_numpy(mask).unsqueeze(0)        # Add channel dimension
+        # Convertir en tenseurs PyTorch
+        image = torch.from_numpy(image)  # Pas besoin de permuter car Rasterio retourne (C, H, W)
+        mask = torch.from_numpy(mask).unsqueeze(0)  # Ajouter la dimension du canal
         
         return image, mask
 
-train_dl = Sentinel2(csv_path=csv_path, split="train")
 
-train_loader = DataLoader(train_dl, batch_size=16, shuffle=True)
 
-for batch_idx, (images, masks) in enumerate(train_loader):
-    print(f"Batch {batch_idx}")
-    print(f"Images shape: {images.shape}")
-    print(f"Masks shape: {masks.shape}")
-    break
