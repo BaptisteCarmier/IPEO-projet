@@ -1,5 +1,5 @@
 from dataloader import *
-from module import *
+from covnet import *
 
 import torch.nn as nn
 import torch.optim as optim
