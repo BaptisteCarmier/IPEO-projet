@@ -15,24 +15,31 @@ for batch_idx, (images, masks) in enumerate(train_loader):
     print(f"Masks shape: {masks.shape}")    # [batch_size, 1, H, W]
     break
 
+assert torch.cuda.is_available()
 
 # Instantiate the model
 model = UNetRegressor(in_channels=12, out_channels=1)
+device = 'cuda'
+model = model.to(device)
 
 # Test with dummy input :)
+"""
 dummy_input = torch.randn(2,12,32,32)
 output = model(dummy_input)
 print("Output shape:", output.shape)
+"""
 
 # Define loss and optimizer
 criterion = nn.MSELoss()  # Or SmoothL1Loss
 optimizer = optim.Adam(model.parameters(), lr=1e-4)
 
 # Training loop
-num_epochs = 1  # Start with a small number of epochs to test
+num_epochs = 5  # Start with a small number of epochs to test
 for epoch in range(num_epochs):
     for batch_idx, (images, masks) in enumerate(train_loader):
         # Move data to device (e.g., CUDA if available)
+        images = images.to(device)
+        masks = masks.to(device)
 
         # Zero the gradients
         optimizer.zero_grad()
@@ -54,3 +61,4 @@ for epoch in range(num_epochs):
             print(f"Epoch [{epoch+1}/{num_epochs}], Batch [{batch_idx+1}/{len(train_loader)}], Loss: {loss.item():.4f}")
 
 print("Training is done ;)")
+
