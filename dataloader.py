@@ -4,6 +4,7 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 import rasterio  # Remplacement de PIL par rasterio
 import numpy as np
+import matplotlib.pyplot
 
 csv_path = "canopy_height_dataset/data_split.csv"
 
@@ -43,10 +44,11 @@ class Sentinel2(Dataset):
         # Convertir les types pour PyTorch
         image = np.array(image, dtype=np.float32)
         mask = np.array(mask, dtype=np.float32)
+    
         
         # Gérer les valeurs nodata dans le masque
         mask[mask == 255] = -1  # Set nodata to -1 ou autre valeur si besoin
-        
+        print(mask)
         # Appliquer les transformations si elles existent
         if self.transform is not None:
             image, mask = self.transform(image, mask)
@@ -58,4 +60,13 @@ class Sentinel2(Dataset):
         return image, mask
 
 
+# Créer le DataLoader
+train_dl = Sentinel2(csv_path=csv_path, split="train")
+train_loader = DataLoader(train_dl, batch_size=16, shuffle=True)
 
+# Test du DataLoader
+for batch_idx, (images, masks) in enumerate(train_loader):
+    print(f"Batch {batch_idx}")
+    print(f"Images shape: {images.shape}")  # [batch_size, C, H, W]
+    print(f"Masks shape: {masks.shape}")    # [batch_size, 1, H, W]
+    break
