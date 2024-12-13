@@ -4,7 +4,7 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 import rasterio  # Remplacement de PIL par rasterio
 import numpy as np
-import matplotlib.pyplot
+import matplotlib.pyplot as plt
 
 csv_path = "canopy_height_dataset/data_split.csv"
 
@@ -48,7 +48,7 @@ class Sentinel2(Dataset):
         
         # Gérer les valeurs nodata dans le masque
         mask[mask == 255] = -1  # Set nodata to -1 ou autre valeur si besoin
-        print(mask)
+
         # Appliquer les transformations si elles existent
         if self.transform is not None:
             image, mask = self.transform(image, mask)
@@ -59,7 +59,8 @@ class Sentinel2(Dataset):
         
         return image, mask
 
-
+#inutie en soi, plus pour tester de visualiser les images
+""" 
 # Créer le DataLoader
 train_dl = Sentinel2(csv_path=csv_path, split="train")
 train_loader = DataLoader(train_dl, batch_size=16, shuffle=True)
@@ -69,4 +70,24 @@ for batch_idx, (images, masks) in enumerate(train_loader):
     print(f"Batch {batch_idx}")
     print(f"Images shape: {images.shape}")  # [batch_size, C, H, W]
     print(f"Masks shape: {masks.shape}")    # [batch_size, 1, H, W]
+
+    single_image = images[0]
+
+    band1 = single_image[3].cpu().numpy()  # Bande 1
+    band2 = single_image[2].cpu().numpy()  # Bande 2
+    band3 = single_image[1].cpu().numpy()  # Bande 3
+
+     rgb_image = np.stack((band1, band2, band3), axis=-1)
+    
+    # Normaliser les valeurs des bandes entre 0 et 1 pour l'affichage
+    rgb_image = (rgb_image - np.min(rgb_image)) / (np.max(rgb_image) - np.min(rgb_image))
+
+    plt.figure(figsize=(8, 8))
+    plt.imshow(rgb_image)
+    plt.title(f"Batch {batch_idx} - Image 1 (RGB)")
+    plt.axis("off")
+    plt.show()  
+
     break
+
+"""

@@ -37,12 +37,13 @@ optimizer = optim.Adam(model.parameters(), lr=1e-4)
 num_epochs = 5  # Start with a small number of epochs to test
 for epoch in range(num_epochs):
     for batch_idx, (images, masks) in enumerate(train_loader):
+
+        model.train()
+        optimizer.zero_grad()
+
         # Move data to device (e.g., CUDA if available)
         images = images.to(device)
         masks = masks.to(device)
-
-        # Zero the gradients
-        optimizer.zero_grad()
 
         # Forward pass
         outputs = model(images)
@@ -62,3 +63,27 @@ for epoch in range(num_epochs):
 
 print("Training is done ;)")
 
+
+############ validation phase
+
+validation_dl = Sentinel2(csv_path=csv_path, split="validation")
+validation_loader = DataLoader(train_dl, batch_size=16, shuffle=False) #False pour permettre une comparaison entre les modèles
+
+val_loss = 0.0
+
+model.eval()
+with torch.no_grad():
+    for batch_idx, (images, masks) in enumerate(validation_loader):
+        images = images.to(device)
+        masks = masks.to(device)
+
+        outputs = model(images)
+
+        loss = criterion(outputs, masks)
+        val_loss+=loss.item()
+
+val_loss /= len(validation_loader)
+print(f"Validation Loss: {val_loss:.4f}")
+
+rmse = torch.sqrt(torch.tensor(val_loss))
+print(f"Validation rmse: {rmse:.4f}")
