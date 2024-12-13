@@ -4,7 +4,6 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 import rasterio  # Remplacement de PIL par rasterio
 import numpy as np
-from pathlib import Path
 
 csv_path = "canopy_height_dataset/data_split.csv"
 
