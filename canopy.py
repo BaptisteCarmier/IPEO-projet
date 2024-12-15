@@ -33,6 +33,7 @@ print("Output shape:", output.shape)
 criterion = nn.MSELoss()  # Or SmoothL1Loss
 optimizer = optim.Adam(model.parameters(), lr=1e-4)
 
+
 # Training loop
 num_epochs = 5  # Start with a small number of epochs to test
 for epoch in range(num_epochs):
@@ -67,7 +68,7 @@ print("Training is done ;)")
 ############ validation phase
 
 validation_dl = Sentinel2(csv_path=csv_path, split="validation")
-validation_loader = DataLoader(train_dl, batch_size=16, shuffle=False) #False pour permettre une comparaison entre les modèles
+validation_loader = DataLoader(validation_dl, batch_size=16, shuffle=False) #False pour permettre une comparaison entre les modèles
 
 val_loss = 0.0
 
