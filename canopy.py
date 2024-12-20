@@ -1,8 +1,10 @@
 from dataloader import *
 from covnet import *
+from metric import *
 
 import torch.nn as nn
 import torch.optim as optim
+import matplotlib.pyplot as plt
 
 # Créer le DataLoader
 train_dl = Sentinel2(csv_path=csv_path, split="train")
