@@ -15,4 +15,4 @@ module load gcc python
 source ~/ipeo_venv/bin/activate # Replace with your environment setup
 
 # Run your Python script
-python canopy.py # Replace with your script name
+python canopyv2.py # Replace with your script name
