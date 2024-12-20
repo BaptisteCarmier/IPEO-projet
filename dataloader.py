@@ -45,10 +45,7 @@ class Sentinel2(Dataset):
         image = np.array(image, dtype=np.float32)
         mask = np.array(mask, dtype=np.float32)
     
-        
-        # Gérer les valeurs nodata dans le masque
-        mask[mask == 255] = -1  # Set nodata to -1 ou autre valeur si besoin
-
+    
         # Appliquer les transformations si elles existent
         if self.transform is not None:
             image, mask = self.transform(image, mask)

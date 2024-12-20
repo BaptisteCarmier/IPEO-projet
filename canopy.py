@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 # Créer le DataLoader
 train_dl = Sentinel2(csv_path=csv_path, split="train")
-train_loader = DataLoader(train_dl, batch_size=16, shuffle=True)
+train_loader = DataLoader(train_dl, batch_size=256, shuffle=True)
 
 # Test du DataLoader
 for batch_idx, (images, masks) in enumerate(train_loader):
@@ -32,12 +32,13 @@ print("Output shape:", output.shape)
 """
 
 # Define loss and optimizer
-criterion = nn.MSELoss()  # Or SmoothL1Loss
+criterion = nn.MSELoss(reduction = 'none')  # Or SmoothL1Loss
+criterion2 = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=1e-4)
 
 
 # Training loop
-num_epochs = 5  # Start with a small number of epochs to test
+num_epochs = 3  # Start with a small number of epochs to test
 for epoch in range(num_epochs):
     for batch_idx, (images, masks) in enumerate(train_loader):
 
@@ -47,13 +48,22 @@ for epoch in range(num_epochs):
         # Move data to device (e.g., CUDA if available)
         images = images.to(device)
         masks = masks.to(device)
-
         # Forward pass
         outputs = model(images)
-
+        loss2 = criterion2(outputs,masks)
+        print("loss2",loss2)
+        print("loss2",loss2.shape)
         # Compute loss
-        loss = criterion(outputs, masks)
+        loss_map = criterion(outputs, masks)
+        valid_mask = (masks != 255)
+        valid_loss_map = loss_map*valid_mask
 
+        loss = torch.mean(valid_loss_map)
+        print(loss.shape)
+        print(loss)
+    
+
+       
         # Backpropagation
         loss.backward()
 
