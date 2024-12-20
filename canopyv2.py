@@ -3,7 +3,7 @@ from covnet import *
 
 import torch.nn as nn
 import torch.optim as optim
-
+import csv
 
 def trainin_epochs(train_loader,optimizer,criterion,model,device="cuda"):
     losses =[]
@@ -13,7 +13,7 @@ def trainin_epochs(train_loader,optimizer,criterion,model,device="cuda"):
         # Move data to device (e.g., CUDA if available)
         images = images.to(device)
         masks = masks.to(device)
-        # Forward pass
+        # Forcsbward pass
         outputs = model(images)
         # Compute loss
         loss = criterion(outputs, masks)
@@ -71,17 +71,51 @@ dummy_input = torch.randn(2,12,32,32)
 output = model(dummy_input)
 print("Output shape:", output.shape)
 """
-
+list_lr = [1e-4,1e-3,1e-2,1e-1]
+list_weight_decay = [1e-6,1e-5,1e-4,1e-3]
 # Define loss and optimizer
+
 criterion = nn.MSELoss()  # Or SmoothL1Loss
-optimizer = optim.Adam(model.parameters(), lr=1e-4)
+
+
+
+#csv part
+csv_file = "training_results1bis.csv"
+
+# Check if the CSV file exists. If not, create a new one with headers
+if not os.path.exists(csv_file):
+    # Define the headers for the CSV file
+    headers = ["Learning Rate", "Weight Decay", "Epoch", "Train Loss", "Train RMSE", "Val Loss", "Val RMSE"]
+    # Create the CSV file and write the headers
+    with open(csv_file, mode='w', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=headers)
+        writer.writeheader()  # Write the header row
+def log_to_csv(lear, wd, epoch, trainloss, trainrmse, val_loss, val_rmse):
+    # Log the values into the CSV
+    data = {
+        "Learning Rate": lear,
+        "Weight Decay": wd,
+        "Epoch": epoch,
+        "Train Loss": trainloss,
+        "Train RMSE": trainrmse,
+        "Val Loss": val_loss,
+        "Val RMSE": val_rmse
+    }
+    # Append the data to the CSV file
+    with open(csv_file, mode='a', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=data.keys())
+        writer.writerow(data)
 
 
 # Training loop
-num_epochs = 50  # Start with a small number of epochs to test
-for epoch in range(num_epochs):
-    trainloss, trainrmse = trainin_epochs(train_loader,optimizer,criterion,model)
-    val_loss,val_rmse = validation_tot(validation_loader,model,criterion)
-    print("For the epoch :",epoch)
-    print("trainloss,trainrmse:",trainloss,",",trainrmse)
-    print("valloss,valrmse:",val_loss,",",val_rmse,"\n")
+num_epochs = 50 # Start with a small number of epochs to test
+for lear in list_lr:
+    for wd in list_weight_decay:
+        optimizer = optim.Adam(model.parameters(), lr=lear,weight_decay=wd)
+        for epoch in range(num_epochs):
+            trainloss, trainrmse = trainin_epochs(train_loader,optimizer,criterion,model)
+            val_loss,val_rmse = validation_tot(validation_loader,model,criterion)
+            print("For the epoch :",epoch)
+            print("trainloss,trainrmse:",trainloss,",",trainrmse)
+            print("valloss,valrmse:",val_loss,",",val_rmse,"\n")
+            log_to_csv(lear, wd, epoch, trainloss, trainrmse, val_loss, val_rmse)
