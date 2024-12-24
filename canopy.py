@@ -32,7 +32,7 @@ print("Output shape:", output.shape)
 """
 
 # Define loss and optimizer
-criterion = nn.MSELoss()  # Or SmoothL1Loss
+criterion = nn.MSELoss(reduction='None')  # Or SmoothL1Loss
 optimizer = optim.Adam(model.parameters(), lr=1e-4)
 
 
@@ -52,7 +52,7 @@ for epoch in range(num_epochs):
         outputs = model(images)
 
         # Compute loss
-        loss = criterion(outputs, masks)
+        loss_mapped = criterion(outputs, masks)
 
         # Backpropagation
         loss.backward()
