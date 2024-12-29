@@ -7,7 +7,7 @@ import torch.optim as optim
 import matplotlib.pyplot as plt
 
 # Créer le DataLoader
-train_dl = Sentinel2(csv_path=csv_path, split="train")
+train_dl = Sentinel2(csv_path=csv_path, split="train",RGB=False)
 train_loader = DataLoader(train_dl, batch_size=256, shuffle=True)
 
 # Test du DataLoader
