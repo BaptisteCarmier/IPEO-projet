@@ -6,16 +6,6 @@ import torch.nn as nn
 import torch.optim as optim
 import matplotlib.pyplot as plt
 
-# Créer le DataLoader
-train_dl = Sentinel2(csv_path=csv_path, split="train",RGB=False)
-train_loader = DataLoader(train_dl, batch_size=256, shuffle=True)
-
-# Test du DataLoader
-for batch_idx, (images, masks) in enumerate(train_loader):
-    print(f"Batch {batch_idx}")
-    print(f"Images shape: {images.shape}")  # [batch_size, C, H, W]
-    print(f"Masks shape: {masks.shape}")    # [batch_size, 1, H, W]
-    break
 
 assert torch.cuda.is_available()
 
