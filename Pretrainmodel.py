@@ -12,8 +12,13 @@ assert torch.cuda.is_available()
 # Instantiate the model
 model = models.resnet101(pretrained = True)
 device = 'cuda'
+# model.fc = nn.Sequential(nn.Linear(model.fc.in_features, 1))
+model.fc = nn.Sequential(
+    nn.Linear(model.fc.in_features, 32 * 32),
+    nn.Unflatten(1, (1, 32, 32))  # Reshape pour correspondre à (batch_size, 1, 32, 32)
+)
+
 model = model.to(device)
-model.fc = nn.Sequential(nn.Linear(model.fc.in_features, 1))
 
 # Test with dummy input :)
 """
@@ -25,7 +30,7 @@ print("Output shape:", output.shape)
 # Define loss and optimizer
 criterion = nn.MSELoss(reduction = 'none')  # Or SmoothL1Loss zhre one we want
 
-validation_dl = Sentinel2(csv_path=csv_path, split="validation",RGB=True)
+validation_dl = Sentinel2(csv_path=csv_path, split="validation", RGB=True)
 validation_loader = DataLoader(validation_dl, batch_size=16, shuffle=False) #False pour permettre une comparaison entre les modèles
 
 val_loss = 0.0
@@ -39,7 +44,7 @@ with torch.no_grad():
         outputs = model(images)
 
         loss = criterion(outputs, masks)
-        val_loss+=loss.item()
+        val_loss+=loss.item() ## on a une erreur de taille ici RuntimeError: "a Tensor with 16384 elements cannot be converted to Scalar"
 
 val_loss /= len(validation_loader)
 print(f"Validation Loss: {val_loss:.4f}")
