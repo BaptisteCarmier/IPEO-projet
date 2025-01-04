@@ -6,7 +6,6 @@ import torch.nn as nn
 import torch.optim as optim
 import matplotlib.pyplot as plt
 
-
 assert torch.cuda.is_available()
 
 # Instantiate the model
@@ -23,9 +22,9 @@ print("Output shape:", output.shape)
 """
 
 # Define loss and optimizer
-criterion = nn.MSELoss(reduction = 'none')  # Or SmoothL1Loss
+criterion = nn.MSELoss(reduction = 'none')  # Or SmoothL1Loss zhre one we want
 
-validation_dl = Sentinel2(csv_path=csv_path, split="validation")
+validation_dl = Sentinel2(csv_path=csv_path, split="validation",RGB=True)
 validation_loader = DataLoader(validation_dl, batch_size=16, shuffle=False) #False pour permettre une comparaison entre les modèles
 
 val_loss = 0.0
