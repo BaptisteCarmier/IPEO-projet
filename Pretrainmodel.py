@@ -5,11 +5,12 @@ from metric import *
 import torch.nn as nn
 import torch.optim as optim
 import matplotlib.pyplot as plt
+import torchvision.models as models
 
 assert torch.cuda.is_available()
 
 # Instantiate the model
-model = resnet101(pretrained = True)
+model = models.resnet101(pretrained = True)
 device = 'cuda'
 model = model.to(device)
 model.fc = nn.Sequential(nn.Linear(model.fc.in_features, 1))
