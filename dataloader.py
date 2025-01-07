@@ -9,7 +9,7 @@ from torchvision.transforms import functional as F
 csv_path = "canopy_height_dataset/data_split.csv"
 
 class Sentinel2(Dataset):
-    def __init__(self, csv_path, split="train", transform=None, RGB=False, R_NIR_SWIR=False):
+    def __init__(self, csv_path, split="train", transform=None, RGB=False):
         """
         Args:
             csv_path (str): Path to the CSV file containing image/mask paths and splits.
@@ -42,10 +42,6 @@ class Sentinel2(Dataset):
         
         if self.RGB:
             image = image[[3,2,1]] #Pour sélectionner RGB
-
-        if self.R_NIR_SWIR:
-            image = image[[3,4,5,6,7,8,10,11]] #Pour sélectionner Red, Red Edge (B05-6-7), NIR (B08-8A), SWIR (B11-12) 
-
 
         # Charger le masque (supposant une seule bande)
         with rasterio.open(mask_path) as src:
