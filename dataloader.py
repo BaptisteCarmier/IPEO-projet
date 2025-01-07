@@ -4,7 +4,7 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 import rasterio  # Remplacement de PIL par rasterio
 import numpy as np
-from torchvision.transforms import functional as F
+
 
 csv_path = "canopy_height_dataset/data_split.csv"
 
@@ -24,8 +24,6 @@ class Sentinel2(Dataset):
         
         self.transform = transform
         self.RGB= RGB
-        self.R_NIR_SWIR = R_NIR_SWIR       
-
 
     def __len__(self):
         return len(self.data)
