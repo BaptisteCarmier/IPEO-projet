@@ -28,12 +28,12 @@ print("Output shape:", output.shape)
 """
 
 # Define loss and optimizer
-criterion = nn.MSELoss(reduction = 'none')  # Or SmoothL1Loss zhre one we want
+criterion = nn.SmoothL1Loss(reduction = 'none')  # Or SmoothL1Loss zhre one we want
 
 test_dl = Sentinel2(csv_path=csv_path, split="test", RGB=True)
 test_loader = DataLoader(test_dl, batch_size=32, shuffle=True) #False pour permettre une comparaison entre les modèles
 
-loss = 0.0
+final_loss = 0.0
 
 model.eval()
 with torch.no_grad():
@@ -50,11 +50,10 @@ with torch.no_grad():
         num_valid_pixels = valid_mask.sum()
         loss = valid_loss_map.sum() / num_valid_pixels
 
-        #loss = criterion(outputs, masks)
-        #val_loss+=loss.item() ## on a une erreur de taille ici RuntimeError: "a Tensor with 16384 elements cannot be converted to Scalar"
+        final_loss += loss.item()
+        
+final_loss /= len(test_loader)
+print(f"Test Loss: {final_loss:.4f}")
 
-loss /= len(test_loader)
-print(f"Test Loss: {loss:.4f}")
-
-rmse = torch.sqrt(torch.tensor(loss))
+rmse = torch.sqrt(torch.tensor(final_loss))
 print(f"Test rmse: {rmse:.4f}")
