@@ -23,7 +23,7 @@ print("Output shape:", output.shape)
 """
 
 # Define loss and optimizer
-criterion = nn.MSELoss(reduction = 'none')  # Or SmoothL1Loss zhre one we want
+criterion = nn.SmoothL1Loss(reduction = 'none')  # Or SmoothL1Loss zhre one we want
 
 validation_dl = Sentinel2(csv_path=csv_path, split="validation",RGB=True)
 validation_loader = DataLoader(validation_dl, batch_size=16, shuffle=False) #False pour permettre une comparaison entre les modèles
