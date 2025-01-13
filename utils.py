@@ -2,12 +2,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def show_mask(pred1, pred2, pred3, pred4, pred5, mask):
+
+    images = [pred2, pred3, pred4, pred5, mask]
+    vmin = None #min([img.min() for img in images])
+    vmax = None #max([img.max() for img in images])
+
     plt.figure(figsize=(12, 3))
 
     pred1 = pred1.squeeze(0)
     # Affichage de la pred1 en niveaux de gris
     plt.subplot(1,6,1)
-    plt.imshow(pred1, cmap='gray')
+    plt.imshow(pred1, cmap='Greens', vmin=vmin, vmax=vmax)
     plt.colorbar(label="Pixel value", shrink=0.4)
     plt.title("Prediction 1")
     plt.axis("off")
@@ -15,7 +20,7 @@ def show_mask(pred1, pred2, pred3, pred4, pred5, mask):
     pred2 = pred2.squeeze(0)
     # Affichage de la pred2 en niveaux de gris
     plt.subplot(1,6,2)
-    plt.imshow(pred2, cmap='gray')
+    plt.imshow(pred2, cmap='Greens', vmin=vmin, vmax=vmax)
     plt.colorbar(label="Pixel value", shrink=0.4)
     plt.title("Prediction 2")
     plt.axis("off")
@@ -23,7 +28,7 @@ def show_mask(pred1, pred2, pred3, pred4, pred5, mask):
     pred3 = pred3.squeeze(0)
     # Affichage de la pred3 en niveaux de gris
     plt.subplot(1,6,3)
-    plt.imshow(pred3, cmap='gray')
+    plt.imshow(pred3, cmap='Greens', vmin=vmin, vmax=vmax)
     plt.colorbar(label="Pixel value", shrink=0.4)
     plt.title("Prediction 3")
     plt.axis("off")
@@ -31,7 +36,7 @@ def show_mask(pred1, pred2, pred3, pred4, pred5, mask):
     pred4 = pred4.squeeze(0)
     # Affichage de la pred4 en niveaux de gris
     plt.subplot(1,6,4)
-    plt.imshow(pred4, cmap='gray')
+    plt.imshow(pred4, cmap='Greens', vmin=vmin, vmax=vmax)
     plt.colorbar(label="Pixel value", shrink=0.4)
     plt.title("Prediction 4")
     plt.axis("off")
@@ -39,7 +44,7 @@ def show_mask(pred1, pred2, pred3, pred4, pred5, mask):
     pred5 = pred5.squeeze(0)
     # Affichage de la pred5 en niveaux de gris
     plt.subplot(1,6,5)
-    plt.imshow(pred5, cmap='gray')
+    plt.imshow(pred5, cmap='Greens', vmin=vmin, vmax=vmax)
     plt.colorbar(label="Pixel value", shrink=0.4)
     plt.title("Prediction 5")
     plt.axis("off")
@@ -47,7 +52,7 @@ def show_mask(pred1, pred2, pred3, pred4, pred5, mask):
     mask = mask.squeeze(0)
     # Affichage de la mask en niveaux de gris
     plt.subplot(1,6,6)
-    plt.imshow(mask, cmap='gray')
+    plt.imshow(mask, cmap='Greens', vmin=vmin, vmax=vmax)
     plt.colorbar(label="Pixel value", shrink=0.4)
     plt.title("Ground Truth")
     plt.axis("off")
@@ -85,7 +90,7 @@ def show_image_histogram_mask(image, mask):
     mask = mask.squeeze(0)
     # Affichage du masque en niveaux de gris
     plt.subplot(1, 4, 3)
-    plt.imshow(mask, cmap='gray')
+    plt.imshow(mask, cmap='Greens')
     plt.colorbar(label="Pixel value")
     plt.title("Mask")
     plt.axis("off")
@@ -122,7 +127,7 @@ def show_before_after_augmentation(image_before, image_after, mask_before, mask_
     mask_before = mask_before.squeeze(0)
     # Affichage du masque en niveaux de gris
     plt.subplot(1, 4, 3)
-    plt.imshow(mask_before, cmap='gray')
+    plt.imshow(mask_before, cmap='Greens')
     plt.colorbar(label="Pixel value")
     plt.title("Mask before augmentation")
     plt.axis("off")
@@ -130,7 +135,7 @@ def show_before_after_augmentation(image_before, image_after, mask_before, mask_
     mask_after = mask_after.squeeze(0)
     # Affichage du masque en niveaux de gris
     plt.subplot(1, 4, 4)
-    plt.imshow(mask_after, cmap='gray')
+    plt.imshow(mask_after, cmap='Greens')
     plt.colorbar(label="Pixel value")
     plt.title("Mask after augmentation")
     plt.axis("off")
