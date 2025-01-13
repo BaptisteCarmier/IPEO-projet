@@ -1,3 +1,4 @@
-canopy_height_dataset.zip #ignore les données
-canopy_height_dataset/ #ignore les données si exraites
-__pycache__/ #ignore le __pycache__
+canopy_height_dataset.zip
+canopy_height_dataset/
+__pycache__/
+*.zip
