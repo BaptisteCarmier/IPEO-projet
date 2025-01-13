@@ -28,7 +28,11 @@ print("Output shape:", output.shape)
 """
 
 # Define loss and optimizer
+<<<<<<< HEAD
 criterion = nn.SmoothL1Loss(reduction = 'none')  # Or SmoothL1Loss zhre one we want
+=======
+criterion = nn.SmoothL1Loss(reduction = 'none')  # Or SmoothL1Loss zhre one we want nn.MSELoss ou nn.L1Loss
+>>>>>>> 25a5c0a (mon git est réparé ?)
 
 test_dl = Sentinel2(csv_path=csv_path, split="test", RGB=True)
 test_loader = DataLoader(test_dl, batch_size=32, shuffle=True) #False pour permettre une comparaison entre les modèles
