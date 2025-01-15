@@ -12,27 +12,19 @@ assert torch.cuda.is_available()
 # Instantiate the model
 model = models.resnet101(pretrained = True)
 device = 'cuda'
-# model.fc = nn.Sequential(nn.Linear(model.fc.in_features, 1))
+
 model.fc = nn.Sequential(
     nn.Linear(model.fc.in_features, 32 * 32),
-    nn.Unflatten(1, (1, 32, 32))  # Reshape pour correspondre à (batch_size, 1, 32, 32)
+    nn.Unflatten(1, (1, 32, 32))  # Reshape to correspond to (batch_size, 1, 32, 32)
 )
 
 model = model.to(device)
 
-# Test with dummy input :)
-"""
-dummy_input = torch.randn(2,12,32,32)
-output = model(dummy_input)
-print("Output shape:", output.shape)
-"""
-
 # Define loss and optimizer
-
-criterion = nn.SmoothL1Loss(reduction = 'none')  # Or SmoothL1Loss zhre one we want
+criterion = nn.SmoothL1Loss(reduction = 'none')
 
 test_dl = Sentinel2(csv_path=csv_path, split="test", RGB=True)
-test_loader = DataLoader(test_dl, batch_size=32, shuffle=True) #False pour permettre une comparaison entre les modèles
+test_loader = DataLoader(test_dl, batch_size=32, shuffle=True) 
 
 final_loss = 0.0
 
