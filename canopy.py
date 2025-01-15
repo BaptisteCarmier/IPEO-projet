@@ -1,6 +1,5 @@
 from dataloader import *
 from covnet import *
-from metric import *
 
 import torch.nn as nn
 import torch.optim as optim

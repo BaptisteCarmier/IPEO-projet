@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 import torch
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset
 import rasterio  # Replacement of PIL by rasterio
 import numpy as np
 
