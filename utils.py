@@ -4,56 +4,74 @@ import matplotlib.pyplot as plt
 def show_mask(pred1, pred2, pred3, pred4, pred5, mask):
 
     images = [pred2, pred3, pred4, pred5, mask]
-    vmin = None #min([img.min() for img in images])
-    vmax = None #max([img.max() for img in images])
+    vmin = None #min([img.min() for img in images]) 
+    vmax = None #max([img.max() for img in images]) 
+
+    valid_mask = (mask != 255)
 
     plt.figure(figsize=(12, 3))
+
+    mae1 = np.sum(np.abs(pred1-mask)*valid_mask)/np.sum(valid_mask)
 
     pred1 = pred1.squeeze(0)
     # Affichage de la pred1 en niveaux de gris
     plt.subplot(1,6,1)
     plt.imshow(pred1, cmap='Greens', vmin=vmin, vmax=vmax)
-    plt.colorbar(label="Pixel value", shrink=0.4)
+    plt.colorbar( shrink=0.4)
     plt.title("Prediction 1")
+    #plt.xlabel(f"MAE : {mae1:.2f}")
+    plt.text(0.5, -0.1, f"MAE : {mae1:.2f}", ha='center', va='center', fontsize=8,transform=plt.gca().transAxes, color='black')
     plt.axis("off")
+
+    mae2 = np.sum(np.abs(pred2-mask)*valid_mask)/np.sum(valid_mask)
 
     pred2 = pred2.squeeze(0)
     # Affichage de la pred2 en niveaux de gris
     plt.subplot(1,6,2)
     plt.imshow(pred2, cmap='Greens', vmin=vmin, vmax=vmax)
-    plt.colorbar(label="Pixel value", shrink=0.4)
+    plt.colorbar( shrink=0.4)
     plt.title("Prediction 2")
+    plt.text(0.5, -0.1, f"MAE : {mae2:.2f}", ha='center', va='center', fontsize=8,transform=plt.gca().transAxes, color='black')
     plt.axis("off")
+
+    mae3 = np.sum(np.abs(pred3-mask)*valid_mask)/np.sum(valid_mask)
 
     pred3 = pred3.squeeze(0)
     # Affichage de la pred3 en niveaux de gris
     plt.subplot(1,6,3)
     plt.imshow(pred3, cmap='Greens', vmin=vmin, vmax=vmax)
-    plt.colorbar(label="Pixel value", shrink=0.4)
+    plt.colorbar( shrink=0.4)
     plt.title("Prediction 3")
+    plt.text(0.5, -0.1, f"MAE : {mae3:.2f}", ha='center', va='center', fontsize=8,transform=plt.gca().transAxes, color='black')
     plt.axis("off")
+
+    mae4 = np.sum(np.abs(pred4-mask)*valid_mask)/np.sum(valid_mask)
 
     pred4 = pred4.squeeze(0)
     # Affichage de la pred4 en niveaux de gris
     plt.subplot(1,6,4)
     plt.imshow(pred4, cmap='Greens', vmin=vmin, vmax=vmax)
-    plt.colorbar(label="Pixel value", shrink=0.4)
+    plt.colorbar( shrink=0.4)
     plt.title("Prediction 4")
+    plt.text(0.5, -0.1, f"MAE : {mae4:.2f}", ha='center', va='center', fontsize=8,transform=plt.gca().transAxes, color='black')
     plt.axis("off")
+
+    mae5 = np.sum(np.abs(pred5-mask)*valid_mask)/np.sum(valid_mask)
 
     pred5 = pred5.squeeze(0)
     # Affichage de la pred5 en niveaux de gris
     plt.subplot(1,6,5)
     plt.imshow(pred5, cmap='Greens', vmin=vmin, vmax=vmax)
-    plt.colorbar(label="Pixel value", shrink=0.4)
+    plt.colorbar( shrink=0.4)
     plt.title("Prediction 5")
+    plt.text(0.5, -0.1, f"MAE : {mae5:.2f}", ha='center', va='center', fontsize=8,transform=plt.gca().transAxes, color='black')
     plt.axis("off")
 
     mask = mask.squeeze(0)
     # Affichage de la mask en niveaux de gris
     plt.subplot(1,6,6)
     plt.imshow(mask, cmap='Greens', vmin=vmin, vmax=vmax)
-    plt.colorbar(label="Pixel value", shrink=0.4)
+    plt.colorbar( shrink=0.4)
     plt.title("Ground Truth")
     plt.axis("off")
 
