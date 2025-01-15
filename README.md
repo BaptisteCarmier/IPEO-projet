@@ -9,7 +9,7 @@ Project of Image Processign for Earth Observation - Ecole Polytechnique Fédéra
 
 ## Project 
 
-METRE L'ABSTRACT
+This study explores the application of deep learning, specifically a U-net model, to the estimation of canopy height using Sentinel-2 imagery. This report explore the comparison of 4 different customs models, and an existing one. Ending up with a best model performing a mean absolute error (MAE) of 4.27 meters, despite a slight performance gap compared to other studies using both Sentinel-1 and Sentinel-2 data. Key finding reveal that, contrary to expectations, the best model was the one using only 3 spectral bands without data augmentation, while models using 12 bands or data augmentation performed less effectively. Future work should focus on integrating relevant spectral bands, optimising feature selection, and improving model generalisation for broader applicability. The results of this study provide valuable insights into the development of accurate canopy height performing a linear regression task.
 
 # Requirement 
 ## Dataset 
