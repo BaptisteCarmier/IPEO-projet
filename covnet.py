@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-# Define the model
 class UNetRegressor(nn.Module):
     def __init__(self, in_channels, out_channels):
         super(UNetRegressor, self).__init__()
@@ -16,6 +15,7 @@ class UNetRegressor(nn.Module):
             nn.Conv2d(64, 64, kernel_size=3, padding=1),           # Output : 64x32x32
             nn.BatchNorm2d(64),
             nn.ReLU(inplace=True),
+            nn.Dropout(0.3)
         )
         self.pool1 = nn.MaxPool2d(kernel_size=2, stride=2)         # Downsample: 32x32 -> 16x16
         
@@ -27,6 +27,7 @@ class UNetRegressor(nn.Module):
             nn.Conv2d(128, 128, kernel_size=3, padding=1),  # Output : 128x16x16
             nn.BatchNorm2d(128),
             nn.ReLU(inplace=True),
+            nn.Dropout(0.3)
         )
         self.pool2 = nn.MaxPool2d(kernel_size=2, stride=2)  # Downsample: 16x16 -> 8x8
         
@@ -38,6 +39,7 @@ class UNetRegressor(nn.Module):
             nn.Conv2d(256, 256, kernel_size=3, padding=1),  # Output : 256x8x8
             nn.BatchNorm2d(256),
             nn.ReLU(inplace=True),
+            nn.Dropout(0.3)
         )
         self.pool3 = nn.MaxPool2d(kernel_size=2, stride=2)  # Downsample: 8x8 -> 4x4
                                                             # Ouptut : 256x4x4
@@ -50,6 +52,7 @@ class UNetRegressor(nn.Module):
             nn.Conv2d(512, 512, kernel_size=3, padding=1),  # Ouptut : 512x4x4
             nn.BatchNorm2d(512),
             nn.ReLU(inplace=True),
+            nn.Dropout(0.4) # deeper network tends to overfit the whole result
         )
 
         # DECODE
@@ -62,6 +65,7 @@ class UNetRegressor(nn.Module):
             nn.Conv2d(256, 256, kernel_size=3, padding=1),
             nn.BatchNorm2d(256),
             nn.ReLU(inplace=True),
+            nn.Dropout(0.3)
         )
         
         # Second upsampling block
@@ -73,6 +77,7 @@ class UNetRegressor(nn.Module):
             nn.Conv2d(128, 128, kernel_size=3, padding=1),
             nn.BatchNorm2d(128),
             nn.ReLU(inplace=True),
+            nn.Dropout(0.3)
         )
         
         # Third upsampling block
@@ -84,6 +89,7 @@ class UNetRegressor(nn.Module):
             nn.Conv2d(64, 64, kernel_size=3, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(inplace=True),
+            nn.Dropout(0.3)
         )                                                                 # Output dec3 : 64x32x32
 
         # Final layer
@@ -118,6 +124,3 @@ class UNetRegressor(nn.Module):
         output = self.final_conv(x)
 
         return output
-
-# changement 
-

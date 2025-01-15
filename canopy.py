@@ -8,10 +8,15 @@ import matplotlib.pyplot as plt
 import csv
 import time
 
-# Important settings
+# Training setting
 
 number_bands = 12
 data_augmentation = True
+
+# Hyperparameters
+criterion = nn.SmoothL1Loss(reduction='none')
+list_lr = [1e-3]
+list_weight_decay = [1e-5]
 
 # Results csv file
 
@@ -20,6 +25,8 @@ csv_file = f"results_{number_bands}bands_{augmentation_status}.csv"
 
 # Number of 255 filtering, comparison
 number_filtered_outside = 0
+
+# Function definition
 
 def trainin_epochs(train_loader,optimizer,criterion,model,device="cuda"):
     losses =[]
@@ -49,8 +56,7 @@ def trainin_epochs(train_loader,optimizer,criterion,model,device="cuda"):
         non_valid_mask = (masks == 255).sum().item()
         print(f"Batch {batch_idx}: Total Pixels = {total_pixels}, Valid Pixels = {valid_pixels}, Filtered Pixels = {non_valid_mask}")
         number_filtered_training = number_filtered_training + non_valid_mask
-
-           
+        
         # Backpropagation
         loss.backward()
 
@@ -67,6 +73,8 @@ def trainin_epochs(train_loader,optimizer,criterion,model,device="cuda"):
 
     # Return mean loss
     mean_loss = np.mean(losses)
+
+    # Sqrt(mean-loss)
     RootLoss_loss = np.sqrt(mean_loss)
     return mean_loss, RootLoss_loss
 
@@ -96,13 +104,10 @@ def validation_tot(validation_loader,model,criterion,device="cuda"):
                 print(f"Validation step, Batch [{batch_idx+1}/{len(train_loader)}], Loss: {loss.item():.4f}")
 
     val_loss /= len(validation_loader)
-    #print(f"Validation Loss: {val_loss:.4f}")
     val_RootLoss = torch.sqrt(torch.tensor(val_loss)).item()
-    #print(f"Validation RootLoss: {RootLoss:.4f}")
     return val_loss,val_RootLoss
 
-
-# Créer le DataLoader
+# Data loading
 
 RGB_bool = (number_bands == 3) # Bool = true if it's RGB
 
@@ -123,25 +128,7 @@ train_loader = DataLoader(train_dl, batch_size=256, shuffle=True)
 validation_dl = Sentinel2(csv_path=csv_path, split="validation", RGB = RGB_bool)
 validation_loader = DataLoader(validation_dl, batch_size=256, shuffle=False)
 
-
-
-
-# Test du DataLoader
-print(f"--- Dataloader test -------------------------------")
-for batch_idx, (images, masks) in enumerate(train_loader):
-    
-    # print(f"Batch {batch_idx}")
-    # print(f"Images shape: {images.shape}")  # [batch_size, C, H, W]
-    # print(f"Masks shape: {masks.shape}")    # [batch_size, 1, H, W]
-
-    # Comparaison with the numbers of 255 pixels per batch. These must match the training as well.
-    num_pixels_with_255 = (masks == 255).sum().item()
-    print(f"Number of pixels with 255 in masks: {num_pixels_with_255}")
-    number_filtered_outside = number_filtered_outside + num_pixels_with_255
-    # print(f"Total number of pixels in masks: {total_pixels}")
-
-print("Number of pixels with 255 in the training set = ", number_filtered_outside)
-
+# Check cuda
 
 assert torch.cuda.is_available()
 
@@ -175,14 +162,8 @@ def log_to_csv(lear, wd, epoch, trainloss, trainRootLoss, val_loss, val_RootLoss
 
 print("--- TRAINING ---------------------------------------")
 
-# Define hyperparameters
-criterion = nn.SmoothL1Loss(reduction='none')
-list_lr = [1e-3, 1e-2]
-list_weight_decay = [1e-6,1e-5,1e-4,1e-3]
-
-
 # Training loop
-num_epochs = 50 # Start with a small number of epochs to test
+num_epochs = 50 
 for lear in list_lr:
     for wd in list_weight_decay:
 
@@ -217,64 +198,3 @@ for lear in list_lr:
                 torch.save(model.state_dict(), model_save_path)
 
 print("--- END --------------------------------------")
-
-"""
-for epoch in range(num_epochs):
-    for batch_idx, (images, masks) in enumerate(train_loader):
-
-        model.train()
-        optimizer.zero_grad()
-
-        # Move data to device (e.g., CUDA if available)
-        images = images.to(device)
-        masks = masks.to(device)
-
-        # Forward pass
-        outputs = model(images)
-
-        # Compute loss - loss map
-        loss_map = criterion(outputs, masks)
-        valid_mask = (masks != 255).float()
-        valid_loss_map = loss_map*valid_mask
-        num_valid_pixels = valid_mask.sum()        
-        loss = valid_loss_map.sum() / num_valid_pixels
-        print("loss after filtering : ",loss.item())
-        print("loss shape after filtering",loss.shape)
-           
-        # Backpropagation
-        loss.backward()
-
-        # Update weights
-        optimizer.step()
-
-        # Print loss for monitoring
-        if batch_idx % 4 == 0:  # Print every 4 batches
-            print(f"Epoch [{epoch+1}/{num_epochs}], Batch [{batch_idx+1}/{len(train_loader)}], Loss: {loss.item():.4f}")
-"""
-
-
-
-############ validation phase
-
-# validation_dl = Sentinel2(csv_path=csv_path, split="validation")
-# validation_loader = DataLoader(validation_dl, batch_size=16, shuffle=False) #False pour permettre une comparaison entre les modèles
-# 
-# val_loss = 0.0
-# 
-# model.eval()
-# with torch.no_grad():
-#     for batch_idx, (images, masks) in enumerate(validation_loader):
-#         images = images.to(device)
-#         masks = masks.to(device)
-# 
-#         outputs = model(images)
-# 
-#         loss = criterion(outputs, masks)
-#         val_loss+=loss.item()
-# 
-# val_loss /= len(validation_loader)
-# print(f"Validation Loss: {val_loss:.4f}")
-# 
-# RootLoss = torch.sqrt(torch.tensor(val_loss))
-# print(f"Validation RootLoss: {RootLoss:.4f}")
-
